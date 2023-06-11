@@ -21,10 +21,11 @@
       Search
     </button>
   </form>
-  <base-select v-model="selectedSort" :options="selectOptions"/>
-  <div class="album-list" v-if="cards">
+  <base-select v-if="!isLoading" v-model="selectedSort" :options="selectOptions"/>
+  <div class="album-list" v-if="cards && !isLoading">
     <ShowAlbum v-for="album in currentCards" :key="album.collectionId" :album="album" />
   </div>
+  <div v-else class="loader" ></div>
   <div class="pagination">
     <button @click="previousPage" :disabled="currentPage === 1" class="pagination-button">
       Previous
@@ -51,10 +52,11 @@ export default defineComponent({
   setup() {
     const isFocused = ref<boolean>(false)
     const isClicked = ref<boolean>(false)
+    const isLoading = ref<boolean>(false)
     const cards = ref<Result[]>([])
     const album = reactive<{ data: ITunesTypes }>({ data: {} })
     const searchText = ref<string>('Eminem')
-    const itemsPerPage = ref<number>(6)
+    const itemsPerPage = ref<number>(4)
     const currentPage = ref<number>(1)
     const selectedSort = ref<string | number>('')
     const selectOptions = ref<SelectOptions[]>([
@@ -85,10 +87,12 @@ export default defineComponent({
     }
 
     const searchItunes = async (search: string) => {
+      isLoading.value = true
       const value = await itunesSearch(search)
       album.data = value
       if (album.data.results) {
         cards.value = album.data.results
+        isLoading.value = false
       }
       isClicked.value = true
       setTimeout(() => {
@@ -121,6 +125,7 @@ export default defineComponent({
     return {
       cards,
       selectOptions,
+      isLoading,
       selectedSort,
       isFocused,
       searchText,
@@ -310,6 +315,36 @@ label.active {
 @media screen and (max-width: 480px) {
   .custom-title {
     font-size: 1em;
+  }
+}
+
+.loader {
+  margin: 5em auto;
+  border: 5px solid #f5f5f5;
+  border-radius: 50%;
+  border-top: 5px solid #0a0e10;
+  width: 40px;
+  height: 40px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 </style>
