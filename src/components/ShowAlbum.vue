@@ -1,6 +1,6 @@
 <template>
   <div class="album-card">
-    <h2 class="album-name">Album Name: {{ album.collectionName }}</h2>
+    <p class="album-name">{{ album.collectionName }}</p>
     <h4 class="section-title">Artwork</h4>
     <img class="artwork" :src="album.artworkUrl100" alt="album" />
     <h4 class="section-title">Price: {{ album.collectionPrice }}</h4>
@@ -41,6 +41,10 @@ export default defineComponent({
 }
 
 .album-name {
+  width: 100%;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
   font-size: 24px;
   font-weight: bold;
   color: #333;
